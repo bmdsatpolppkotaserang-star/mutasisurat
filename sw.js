@@ -1,12 +1,12 @@
-const CACHE_NAME = 'agenda-surat-satpolpp-v1.0.0';
+const CACHE_NAME = 'agenda-surat-satpolpp-v1.0.1';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
   './logo.png',
   './polpp.png',
-  './image-192.png',
-  './image-512.png'
+  './icon-192x192-maskable.png,
+  './icon-512x512-maskable.png'
 ];
 
 // Saat Service Worker dipasang (Install)
