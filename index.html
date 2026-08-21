@@ -3,77 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Agenda Surat - Satpol PP</title>
+    <title>Agenda Surat Digital - Satpol PP</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- SheetJS untuk Export Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+        }
+        .shadow-custom {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .table th {
+            white-space: nowrap;
+            background-color: #212529 !important;
+            color: white;
+        }
+        .form-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #495057;
+        }
+        .btn-custom {
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+        /* Penyesuaian khusus tampilan HP */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container py-5">
-        <h2 class="mb-4 text-center">📂 Agenda Surat Digital Satpol PP</h2>
+<body>
+
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-dark">📂 Agenda Surat Digital</h2>
+            <p class="text-muted small">Satuan Polisi Pamong Praja Kota Serang</p>
+        </div>
         
-        <!-- Form Input -->
-        <div class="card shadow-sm p-4 mb-5">
-            <h4 class="mb-3">Tambah Agenda Surat</h4>
+        <!-- Form Input Card -->
+        <div class="card shadow-custom p-4 mb-4 bg-white">
+            <h5 class="mb-3 text-primary fw-bold"><i class="bi bi-plus-circle-fill me-2"></i>Tambah Agenda Surat</h5>
             <form id="agendaForm">
                 <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Tanggal</label>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Tanggal Surat</label>
                         <input type="date" class="form-control" id="tanggal" required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 col-12">
                         <label class="form-label">Nomor Surat</label>
-                        <input type="text" class="form-control" id="nomorSurat" required>
+                        <input type="text" class="form-control" id="nomorSurat" placeholder="Contoh: 100/..." required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 col-12">
                         <label class="form-label">Perihal</label>
-                        <input type="text" class="form-control" id="perihal" required>
+                        <input type="text" class="form-control" id="perihal" placeholder="Perihal surat..." required>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Uraian</label>
-                        <input type="text" class="form-control" id="uraian">
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Uraian Singkat</label>
+                        <input type="text" class="form-control" id="uraian" placeholder="Uraian isi surat">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 col-12">
                         <label class="form-label">Asal Surat</label>
-                        <input type="text" class="form-control" id="asalSurat">
+                        <input type="text" class="form-control" id="asalSurat" placeholder="Instansi pengirim">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Pengeluaran</label>
-                        <input type="text" class="form-control" id="pengeluaran">
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Pengeluaran / Sifat</label>
+                        <input type="text" class="form-control" id="pengeluaran" placeholder="Biasa / Penting / Rahasia">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Pengelola</label>
-                        <input type="text" class="form-control" id="pengelola">
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Pengelola / Petugas</label>
+                        <input type="text" class="form-control" id="pengelola" placeholder="Nama petugas penanggung jawab">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 col-12">
                         <label class="form-label">Tanggal Selesai</label>
                         <input type="date" class="form-control" id="tanggalSelesai">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Upload File Surat (PDF/Foto)</label>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Upload File (PDF/Foto)</label>
                         <input type="file" class="form-control" id="fileSurat">
                     </div>
-                    <div class="col-md-12">
-                        <label class="form-label">Keterangan</label>
-                        <textarea class="form-control" id="keterangan" rows="2"></textarea>
-                    </div>
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary" id="btnSimpan">Simpan Data</button>
+                        <label class="form-label">Keterangan Tambahan</label>
+                        <textarea class="form-control" id="keterangan" rows="2" placeholder="Catatan opsional..."></textarea>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary btn-custom w-100 w-md-auto" id="btnSimpan">
+                            <i class="bi bi-save me-2"></i>Simpan Data
+                        </button>
                     </div>
                 </div>
             </form>
         </div>
 
-        <!-- Tabel Data -->
-        <div class="card shadow-sm p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="mb-0">Daftar Agenda Surat</h4>
-                <button class="btn btn-success" onclick="exportTableToExcel()">📥 Download Excel</button>
+        <!-- Tabel Data Card -->
+        <div class="card shadow-custom p-4 bg-white">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-table me-2"></i>Daftar Agenda Surat</h5>
+                <button class="btn btn-success btn-custom" onclick="exportTableToExcel()">
+                    <i class="bi bi-file-earmark-excel-fill me-2"></i>Download Excel
+                </button>
             </div>
+            
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="tabelAgenda">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle" id="tabelAgenda">
+                    <thead>
                         <tr>
-                            <th>No. Urut</th>
+                            <th>No</th>
                             <th>Tanggal</th>
                             <th>Nomor Surat</th>
                             <th>Perihal</th>
@@ -81,19 +133,23 @@
                             <th>Asal Surat</th>
                             <th>Pengeluaran</th>
                             <th>Pengelola</th>
-                            <th>Tanggal Selesai</th>
+                            <th>Tgl Selesai</th>
                             <th>Keterangan</th>
                             <th>File</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Data dimuat via JS -->
+                        <tr>
+                            <td colspan="11" class="text-center py-4 text-muted">Memuat data...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- Script JavaScript -->
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_LY0b3RYe7qB85mg_6-KdENhjxwcGDwo5RiU2p-N3sxcQBcvBwvCnRFXBQ5pLrHFhOg/exec';
 
@@ -101,7 +157,6 @@
             var table = document.getElementById("tabelAgenda");
             var workbook = XLSX.utils.table_to_book(table, {sheet: "Agenda Surat", raw: true});
             
-            // Memaksa semua sel terbaca sebagai teks agar nomor surat (seperti "100/") tidak berubah jadi tanggal
             var sheetName = workbook.SheetNames[0];
             var worksheet = workbook.Sheets[sheetName];
             for (var cell in worksheet) {
@@ -115,7 +170,7 @@
         document.getElementById('agendaForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSimpan');
-            btn.innerText = 'Menyimpan...';
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
             btn.disabled = true;
 
             const fileInput = document.getElementById('fileSurat');
@@ -160,8 +215,9 @@
             .catch(err => {
                 alert('Gagal menyimpan data!');
                 console.error(err);
-                document.getElementById('btnSimpan').disabled = false;
-                document.getElementById('btnSimpan').innerText = 'Simpan Data';
+                const btn = document.getElementById('btnSimpan');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-save me-2"></i>Simpan Data';
             });
         }
 
@@ -170,23 +226,31 @@
         .then(data => {
             const tbody = document.querySelector('#tabelAgenda tbody');
             tbody.innerHTML = '';
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-muted">Belum ada data agenda surat.</td></tr>`;
+                return;
+            }
             data.forEach((row, index) => {
-                let fileLink = row['Link File'] ? `<a href="${row['Link File']}" target="_blank">Lihat File</a>` : '-';
+                let fileLink = row['Link File'] ? `<a href="${row['Link File']}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> Lihat</a>` : '<span class="text-muted">-</span>';
                 let tr = `<tr>
                     <td>${index + 1}</td>
                     <td>${row['Tanggal'] ? row['Tanggal'].split('T')[0] : ''}</td>
-                    <td>${row['Nomor Surat']}</td>
-                    <td>${row['Perihal']}</td>
-                    <td>${row['Uraian']}</td>
-                    <td>${row['Asal Surat']}</td>
-                    <td>${row['Pengeluaran']}</td>
-                    <td>${row['Pengelola']}</td>
+                    <td class="fw-bold text-dark">${row['Nomor Surat'] || ''}</td>
+                    <td>${row['Perihal'] || ''}</td>
+                    <td>${row['Uraian'] || ''}</td>
+                    <td>${row['Asal Surat'] || ''}</td>
+                    <td>${row['Pengeluaran'] || ''}</td>
+                    <td>${row['Pengelola'] || ''}</td>
                     <td>${row['Tanggal Selesai'] ? row['Tanggal Selesai'].split('T')[0] : ''}</td>
-                    <td>${row['Keterangan']}</td>
+                    <td>${row['Keterangan'] || ''}</td>
                     <td>${fileLink}</td>
                 </tr>`;
                 tbody.innerHTML += tr;
             });
+        })
+        .catch(err => {
+            const tbody = document.querySelector('#tabelAgenda tbody');
+            tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-danger">Gagal memuat data dari server.</td></tr>`;
         });
     </script>
 </body>
