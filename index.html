@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda Surat Digital - Satpol PP Kota Serang</title>
+    
+    <!-- PWA Configurations -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -118,11 +125,9 @@
     <!-- HALAMAN LOGIN -->
     <div id="loginWrapper">
         <div class="login-card">
-            <!-- Logo Instansi -->
             <div class="logo-container">
-                <!-- Ganti link gambar di bawah dengan URL logo Kota Serang & Satpol PP Anda jika ada -->
-                <img src="logo.png" alt="Logo Kota Serang" title="Logo Kota Serang">
-                <img src="polpp.png" alt="Logo Satpol PP" title="Logo Satpol PP">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Coat_of_arms_of_Serang_City.png" alt="Logo Kota Serang" title="Logo Kota Serang">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Satpol_PP.png" alt="Logo Satpol PP" title="Logo Satpol PP">
             </div>
             <div class="text-center mb-4">
                 <h4 class="fw-bold text-dark mb-1">Agenda Surat Digital</h4>
@@ -147,7 +152,7 @@
 
     <!-- HALAMAN UTAMA APLIKASI -->
     <div id="appWrapper" class="container py-4 d-none">
-        <!-- Header Atas (Lebih Rapih & Proporsional) -->
+        <!-- Header Atas -->
         <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
             <div class="d-flex align-items-center gap-3">
                 <div class="bg-primary text-white p-2 rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
@@ -158,7 +163,6 @@
                     <span class="text-muted small">Satpol PP Kota Serang</span>
                 </div>
             </div>
-            <!-- Tombol Keluar Dikecilkan & Proporsional -->
             <button class="btn btn-outline-danger btn-sm px-3 py-1.5 fw-semibold rounded-2 d-flex align-items-center gap-1" onclick="logout()">
                 <i class="bi bi-box-arrow-right"></i> Keluar
             </button>
@@ -261,6 +265,15 @@
 
     <!-- Script JavaScript -->
     <script>
+        // Pendaftaran Service Worker untuk PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker terdaftar!', reg))
+                    .catch(err => console.log('Service Worker gagal:', err));
+            });
+        }
+
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_LY0b3RYe7qB85mg_6-KdENhjxwcGDwo5RiU2p-N3sxcQBcvBwvCnRFXBQ5pLrHFhOg/exec';
 
         window.onload = function() {
@@ -367,7 +380,7 @@
             }
         });
 
-        function sendData(fileData, fileName, fileType) {
+    function sendData(fileData, fileName, fileType) {
             const data = {
                 tanggal: document.getElementById('tanggal').value,
                 nomorSurat: document.getElementById('nomorSurat').value,
