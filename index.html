@@ -226,10 +226,19 @@
         .then(data => {
             const tbody = document.querySelector('#tabelAgenda tbody');
             tbody.innerHTML = '';
+            
             if(data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-muted">Belum ada data agenda surat.</td></tr>`;
                 return;
             }
+
+            // Mengurutkan data secara otomatis berdasarkan Nomor Surat (dari kecil ke besar)
+            data.sort((a, b) => {
+                let numA = a['Nomor Surat'] || '';
+                let numB = b['Nomor Surat'] || '';
+                return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
             data.forEach((row, index) => {
                 let fileLink = row['Link File'] ? `<a href="${row['Link File']}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> Lihat</a>` : '<span class="text-muted">-</span>';
                 let tr = `<tr>
