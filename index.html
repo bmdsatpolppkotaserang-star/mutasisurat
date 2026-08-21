@@ -37,7 +37,6 @@
             font-weight: 600;
             border-radius: 8px;
         }
-        /* Penyesuaian khusus tampilan HP */
         @media (max-width: 768px) {
             .container {
                 padding-left: 10px;
@@ -136,12 +135,12 @@
                             <th>Tgl Selesai</th>
                             <th>Keterangan</th>
                             <th>File</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Data dimuat via JS -->
                         <tr>
-                            <td colspan="11" class="text-center py-4 text-muted">Memuat data...</td>
+                            <td colspan="12" class="text-center py-4 text-muted">Memuat data...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -155,8 +154,13 @@
 
         function exportTableToExcel() {
             var table = document.getElementById("tabelAgenda");
-            var workbook = XLSX.utils.table_to_book(table, {sheet: "Agenda Surat", raw: true});
-            
+            // Sembunyikan kolom aksi terakhir saat export excel agar bersih
+            var cloneTable = table.cloneNode(true);
+            for (var i = 0; i < cloneTable.rows.length; i++) {
+                cloneTable.rows[i].deleteCell(-1); // Hapus kolom aksi
+            }
+
+            var workbook = XLSX.utils.table_to_book(cloneTable, {sheet: "Agenda Surat", raw: true});
             var sheetName = workbook.SheetNames[0];
             var worksheet = workbook.Sheets[sheetName];
             for (var cell in worksheet) {
@@ -221,6 +225,30 @@
             });
         }
 
+        // Fungsi Hapus Data
+        function hapusData(rowIndex, nomorSurat) {
+            if (confirm(`Apakah Anda yakin ingin menghapus agenda dengan Nomor Surat: "${nomorSurat}"?`)) {
+                const data = {
+                    action: 'delete',
+                    rowIndex: rowIndex
+                };
+
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                })
+                .then(res => res.json())
+                .then(res => {
+                    alert(res.message);
+                    location.reload();
+                })
+                .catch(err => {
+                    alert('Gagal menghapus data!');
+                    console.error(err);
+                });
+            }
+        }
+
         fetch(SCRIPT_URL)
         .then(res => res.json())
         .then(data => {
@@ -228,11 +256,11 @@
             tbody.innerHTML = '';
             
             if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-muted">Belum ada data agenda surat.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-muted">Belum ada data agenda surat.</td></tr>`;
                 return;
             }
 
-            // Mengurutkan data secara otomatis berdasarkan Nomor Surat (dari kecil ke besar)
+            // Mengurutkan data berdasarkan Nomor Surat secara otomatis
             data.sort((a, b) => {
                 let numA = a['Nomor Surat'] || '';
                 let numB = b['Nomor Surat'] || '';
@@ -241,6 +269,8 @@
 
             data.forEach((row, index) => {
                 let fileLink = row['Link File'] ? `<a href="${row['Link File']}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> Lihat</a>` : '<span class="text-muted">-</span>';
+                let btnHapus = `<button class="btn btn-sm btn-danger" onclick="hapusData(${row['rowIndex']}, '${row['Nomor Surat']}')"><i class="bi bi-trash-fill"></i> Hapus</button>`;
+                
                 let tr = `<tr>
                     <td>${index + 1}</td>
                     <td>${row['Tanggal'] ? row['Tanggal'].split('T')[0] : ''}</td>
@@ -253,13 +283,14 @@
                     <td>${row['Tanggal Selesai'] ? row['Tanggal Selesai'].split('T')[0] : ''}</td>
                     <td>${row['Keterangan'] || ''}</td>
                     <td>${fileLink}</td>
+                    <td>${btnHapus}</td>
                 </tr>`;
                 tbody.innerHTML += tr;
             });
         })
         .catch(err => {
             const tbody = document.querySelector('#tabelAgenda tbody');
-            tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 text-danger">Gagal memuat data dari server.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-danger">Gagal memuat data dari server.</td></tr>`;
         });
     </script>
 </body>
