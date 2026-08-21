@@ -37,6 +37,12 @@
             font-weight: 600;
             border-radius: 8px;
         }
+        #loginWrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         @media (max-width: 768px) {
             .container {
                 padding-left: 10px;
@@ -50,11 +56,44 @@
 </head>
 <body>
 
-    <div class="container py-4">
-        <!-- Header -->
-        <div class="text-center mb-4">
-            <h2 class="fw-bold text-dark">📂 Agenda Surat Digital</h2>
-            <p class="text-muted small">Satuan Polisi Pamong Praja Kota Serang</p>
+    <!-- HALAMAN LOGIN -->
+    <div id="loginWrapper" class="container">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-4 col-12">
+                <div class="card shadow-custom p-4 bg-white">
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold text-dark">🔐 Login Petugas</h3>
+                        <p class="text-muted small">Agenda Surat Satpol PP Kota Serang</p>
+                    </div>
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" placeholder="Masukkan username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Masukkan password" required>
+                        </div>
+                        <div class="text-danger small mb-3 d-none" id="loginError">Username atau password salah!</div>
+                        <button type="submit" class="btn btn-primary btn-custom w-100" id="btnLogin">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN UTAMA APLIKASI -->
+    <div id="appWrapper" class="container py-4 d-none">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-0">📂 Agenda Surat Digital</h2>
+                <p class="text-muted small mb-0">Satuan Polisi Pamong Praja Kota Serang</p>
+            </div>
+            <button class="btn btn-outline-danger btn-sm fw-bold" onclick="logout()">
+                <i class="bi bi-box-arrow-right me-1"></i>Keluar
+            </button>
         </div>
         
         <!-- Form Input Card -->
@@ -152,11 +191,69 @@
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_LY0b3RYe7qB85mg_6-KdENhjxwcGDwo5RiU2p-N3sxcQBcvBwvCnRFXBQ5pLrHFhOg/exec';
 
+        window.onload = function() {
+            if (localStorage.getItem("isLoggedIn") === "true") {
+                showApp();
+            }
+        };
+
+        // Proses Login via Google Sheets
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const btnLogin = document.getElementById('btnLogin');
+            const errDiv = document.getElementById('loginError');
+
+            btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengecek...';
+            btnLogin.disabled = true;
+            errDiv.classList.add('d-none');
+
+            const loginData = {
+                action: 'login',
+                username: u,
+                password: p
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(loginData)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    localStorage.setItem("isLoggedIn", "true");
+                    showApp();
+                } else {
+                    errDiv.textContent = res.message;
+                    errDiv.classList.remove('d-none');
+                    btnLogin.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Masuk';
+                    btnLogin.disabled = false;
+                }
+            })
+            .catch(err => {
+                alert('Terjadi kesalahan koneksi!');
+                console.error(err);
+                btnLogin.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Masuk';
+                btnLogin.disabled = false;
+            });
+        });
+
+        function showApp() {
+            document.getElementById('loginWrapper').classList.add('d-none');
+            document.getElementById('appWrapper').classList.remove('d-none');
+            loadData();
+        }
+
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            location.reload();
+        }
+
         function exportTableToExcel() {
             var table = document.getElementById("tabelAgenda");
             var cloneTable = table.cloneNode(true);
             
-            // Hapus kolom aksi terakhir agar tidak ikut ter-download
             for (var i = 0; i < cloneTable.rows.length; i++) {
                 cloneTable.rows[i].deleteCell(-1); 
             }
@@ -165,25 +262,15 @@
             var sheetName = workbook.SheetNames[0];
             var worksheet = workbook.Sheets[sheetName];
 
-            // Paksa semua sel terbaca sebagai teks
             for (var cell in worksheet) {
                 if (cell[0] === '!') continue;
                 worksheet[cell].t = 's'; 
             }
 
-            // Atur lebar kolom agar rapi dan tidak terpotong di Excel
             worksheet['!cols'] = [
-                { wch: 5 },   // No
-                { wch: 12 },  // Tanggal
-                { wch: 20 },  // Nomor Surat
-                { wch: 25 },  // Perihal
-                { wch: 25 },  // Uraian
-                { wch: 20 },  // Asal Surat
-                { wch: 15 },  // Pengeluaran
-                { wch: 15 },  // Pengelola
-                { wch: 12 },  // Tanggal Selesai
-                { wch: 25 },  // Keterangan
-                { wch: 15 }   // File
+                { wch: 5 },   { wch: 12 },  { wch: 20 },  { wch: 25 },  
+                { wch: 25 },  { wch: 20 },  { wch: 15 },  { wch: 15 },  
+                { wch: 12 },  { wch: 25 },  { wch: 15 }
             ];
 
             XLSX.writeFile(workbook, 'Agenda_Surat_SatpolPP.xlsx');
@@ -266,48 +353,50 @@
             }
         }
 
-        fetch(SCRIPT_URL)
-        .then(res => res.json())
-        .then(data => {
-            const tbody = document.querySelector('#tabelAgenda tbody');
-            tbody.innerHTML = '';
-            
-            if(data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-muted">Belum ada data agenda surat.</td></tr>`;
-                return;
-            }
-
-            data.sort((a, b) => {
-                let numA = a['Nomor Surat'] || '';
-                let numB = b['Nomor Surat'] || '';
-                return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' });
-            });
-
-            data.forEach((row, index) => {
-                let fileLink = row['Link File'] ? `<a href="${row['Link File']}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> Lihat</a>` : '<span class="text-muted">-</span>';
-                let btnHapus = `<button class="btn btn-sm btn-danger" onclick="hapusData(${row['rowIndex']}, '${row['Nomor Surat']}')"><i class="bi bi-trash-fill"></i> Hapus</button>`;
+        function loadData() {
+            fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#tabelAgenda tbody');
+                tbody.innerHTML = '';
                 
-                let tr = `<tr>
-                    <td>${index + 1}</td>
-                    <td>${row['Tanggal'] ? row['Tanggal'].split('T')[0] : ''}</td>
-                    <td class="fw-bold text-dark">${row['Nomor Surat'] || ''}</td>
-                    <td>${row['Perihal'] || ''}</td>
-                    <td>${row['Uraian'] || ''}</td>
-                    <td>${row['Asal Surat'] || ''}</td>
-                    <td>${row['Pengeluaran'] || ''}</td>
-                    <td>${row['Pengelola'] || ''}</td>
-                    <td>${row['Tanggal Selesai'] ? row['Tanggal Selesai'].split('T')[0] : ''}</td>
-                    <td>${row['Keterangan'] || ''}</td>
-                    <td>${fileLink}</td>
-                    <td>${btnHapus}</td>
-                </tr>`;
-                tbody.innerHTML += tr;
+                if(data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-muted">Belum ada data agenda surat.</td></tr>`;
+                    return;
+                }
+
+                data.sort((a, b) => {
+                    let numA = a['Nomor Surat'] || '';
+                    let numB = b['Nomor Surat'] || '';
+                    return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' });
+                });
+
+                data.forEach((row, index) => {
+                    let fileLink = row['Link File'] ? `<a href="${row['Link File']}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> Lihat</a>` : '<span class="text-muted">-</span>';
+                    let btnHapus = `<button class="btn btn-sm btn-danger" onclick="hapusData(${row['rowIndex']}, '${row['Nomor Surat']}')"><i class="bi bi-trash-fill"></i> Hapus</button>`;
+                    
+                    let tr = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${row['Tanggal'] ? row['Tanggal'].split('T')[0] : ''}</td>
+                        <td class="fw-bold text-dark">${row['Nomor Surat'] || ''}</td>
+                        <td>${row['Perihal'] || ''}</td>
+                        <td>${row['Uraian'] || ''}</td>
+                        <td>${row['Asal Surat'] || ''}</td>
+                        <td>${row['Pengeluaran'] || ''}</td>
+                        <td>${row['Pengelola'] || ''}</td>
+                        <td>${row['Tanggal Selesai'] ? row['Tanggal Selesai'].split('T')[0] : ''}</td>
+                        <td>${row['Keterangan'] || ''}</td>
+                        <td>${fileLink}</td>
+                        <td>${btnHapus}</td>
+                    </tr>`;
+                    tbody.innerHTML += tr;
+                });
+            })
+            .catch(err => {
+                const tbody = document.querySelector('#tabelAgenda tbody');
+                tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-danger">Gagal memuat data dari server.</td></tr>`;
             });
-        })
-        .catch(err => {
-            const tbody = document.querySelector('#tabelAgenda tbody');
-            tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-danger">Gagal memuat data dari server.</td></tr>`;
-        });
+        }
     </script>
 </body>
 </html>
