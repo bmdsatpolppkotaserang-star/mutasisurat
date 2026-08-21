@@ -154,19 +154,37 @@
 
         function exportTableToExcel() {
             var table = document.getElementById("tabelAgenda");
-            // Sembunyikan kolom aksi terakhir saat export excel agar bersih
             var cloneTable = table.cloneNode(true);
+            
+            // Hapus kolom aksi terakhir agar tidak ikut ter-download
             for (var i = 0; i < cloneTable.rows.length; i++) {
-                cloneTable.rows[i].deleteCell(-1); // Hapus kolom aksi
+                cloneTable.rows[i].deleteCell(-1); 
             }
 
             var workbook = XLSX.utils.table_to_book(cloneTable, {sheet: "Agenda Surat", raw: true});
             var sheetName = workbook.SheetNames[0];
             var worksheet = workbook.Sheets[sheetName];
+
+            // Paksa semua sel terbaca sebagai teks
             for (var cell in worksheet) {
                 if (cell[0] === '!') continue;
                 worksheet[cell].t = 's'; 
             }
+
+            // Atur lebar kolom agar rapi dan tidak terpotong di Excel
+            worksheet['!cols'] = [
+                { wch: 5 },   // No
+                { wch: 12 },  // Tanggal
+                { wch: 20 },  // Nomor Surat
+                { wch: 25 },  // Perihal
+                { wch: 25 },  // Uraian
+                { wch: 20 },  // Asal Surat
+                { wch: 15 },  // Pengeluaran
+                { wch: 15 },  // Pengelola
+                { wch: 12 },  // Tanggal Selesai
+                { wch: 25 },  // Keterangan
+                { wch: 15 }   // File
+            ];
 
             XLSX.writeFile(workbook, 'Agenda_Surat_SatpolPP.xlsx');
         }
@@ -225,7 +243,6 @@
             });
         }
 
-        // Fungsi Hapus Data
         function hapusData(rowIndex, nomorSurat) {
             if (confirm(`Apakah Anda yakin ingin menghapus agenda dengan Nomor Surat: "${nomorSurat}"?`)) {
                 const data = {
@@ -260,7 +277,6 @@
                 return;
             }
 
-            // Mengurutkan data berdasarkan Nomor Surat secara otomatis
             data.sort((a, b) => {
                 let numA = a['Nomor Surat'] || '';
                 let numB = b['Nomor Surat'] || '';
