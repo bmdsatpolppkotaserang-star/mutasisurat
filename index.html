@@ -13,18 +13,111 @@
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- SheetJS untuk Export Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --primary-color: #0f172a; --accent-color: #2563eb; --bg-color: #f8fafc; }
-        body { background-color: var(--bg-color); font-family: 'Segoe UI', system-ui, sans-serif; color: #334155; }
-        .card { border: none; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .table th { background-color: var(--primary-color) !important; color: white; padding: 12px 16px; }
-        .form-control { border-radius: 10px; padding: 10px 14px; }
-        #loginWrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 15px; }
-        .login-card { background: white; padding: 30px; border-radius: 20px; width: 100%; max-width: 420px; }
-        .logo-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .logo-container img { height: 55px; object-fit: contain; }
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --bg-color: #f8fafc;
+        }
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #334155;
+        }
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .table th {
+            white-space: nowrap;
+            background-color: var(--primary-color) !important;
+            color: white;
+            font-weight: 600;
+            padding: 12px 16px;
+        }
+        .table td {
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+        .form-label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.95rem;
+        }
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .btn-custom {
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        /* Halaman Login */
+        #loginWrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 15px;
+        }
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            height: 55px;
+            object-fit: contain;
+        }
+        /* Penyesuaian Mobile */
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.9rem;
+            }
+            .container {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            .card {
+                padding: 16px !important;
+                border-radius: 12px;
+            }
+            .btn-custom {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            .action-header {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -32,7 +125,7 @@
     <!-- HALAMAN LOGIN -->
     <div id="loginWrapper">
         <div class="login-card">
-            <div class="logo-container">
+           <div class="logo-container">
                 <img src="logo.png" alt="Logo Kota Serang" loading="lazy">
                 <img src="polpp.png" alt="Logo Satpol PP" loading="lazy">
             </div>
@@ -41,53 +134,153 @@
                 <p class="text-muted small mb-0">Satpol PP Kota Serang</p>
             </div>
             <form id="loginForm">
-                <div class="mb-3"><label class="form-label">Username</label><input type="text" class="form-control" id="username" required></div>
-                <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" id="password" required></div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="Masukkan username" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Masukkan password" required>
+                </div>
                 <div class="alert alert-danger py-2 small mb-3 d-none" id="loginError">Username atau password salah!</div>
-                <button type="submit" class="btn btn-primary w-100 py-2" id="btnLogin">Masuk Aplikasi</button>
+                <button type="submit" class="btn btn-primary btn-custom w-100 py-2" id="btnLogin">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Masuk Aplikasi
+                </button>
             </form>
         </div>
     </div>
 
     <!-- HALAMAN UTAMA APLIKASI -->
     <div id="appWrapper" class="container py-4 d-none">
+        
         <!-- Tombol Install PWA -->
-        <button id="btnInstall" class="btn btn-warning fw-bold px-3 py-2 rounded-3 mb-3 d-none">
-            <i class="bi bi-download me-1"></i> Install Aplikasi ke HP
+        <button id="btnInstall" class="btn btn-warning btn-custom w-100 mb-3 fw-bold d-none shadow-sm">
+            <i class="bi bi-download me-2"></i>Install Aplikasi ke HP
         </button>
 
+        <!-- Header Atas -->
         <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded-4 shadow-sm">
             <div class="d-flex align-items-center gap-3">
-                <div class="bg-primary text-white p-2 rounded-3"><i class="bi bi-folder2-open fs-5"></i></div>
-                <div><h5 class="fw-bold mb-0">Agenda Surat Digital</h5><span class="text-muted small">Satpol PP Kota Serang</span></div>
+                <div class="bg-primary text-white p-2 rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                    <i class="bi bi-folder2-open fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">Agenda Surat Digital</h5>
+                    <span class="text-muted small">Satpol PP Kota Serang</span>
+                </div>
             </div>
-            <button class="btn btn-outline-danger btn-sm" onclick="logout()">Keluar</button>
+            <button class="btn btn-outline-danger btn-sm px-3 py-1.5 fw-semibold rounded-2 d-flex align-items-center gap-1" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i> Keluar
+            </button>
         </div>
         
+        <!-- Form Input Card -->
         <div class="card p-4 mb-4 bg-white">
-            <h5 class="mb-3 text-primary fw-bold"><i class="bi bi-plus-circle-fill"></i> Tambah Agenda Surat</h5>
+            <h5 class="mb-3 text-primary fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-plus-circle-fill"></i> Tambah Agenda Surat
+            </h5>
             <form id="agendaForm">
                 <div class="row g-3">
-                    <div class="col-md-4"><label class="form-label">Tanggal</label><input type="date" class="form-control" id="tanggal" required></div>
-                    <div class="col-md-4"><label class="form-label">Nomor Surat</label><input type="text" class="form-control" id="nomorSurat" required></div>
-                    <div class="col-md-4"><label class="form-label">Perihal</label><input type="text" class="form-control" id="perihal" required></div>
-                    <div class="col-12"><button type="submit" class="btn btn-primary w-100" id="btnSimpan">Simpan Data</button></div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Tanggal Surat</label>
+                        <input type="date" class="form-control" id="tanggal" required>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Nomor Surat</label>
+                        <input type="text" class="form-control" id="nomorSurat" placeholder="Contoh: 100/..." required>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Perihal</label>
+                        <input type="text" class="form-control" id="perihal" placeholder="Perihal surat..." required>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Uraian Singkat</label>
+                        <input type="text" class="form-control" id="uraian" placeholder="Uraian isi surat">
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Asal Surat</label>
+                        <input type="text" class="form-control" id="asalSurat" placeholder="Instansi pengirim">
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Pengeluaran / Sifat</label>
+                        <input type="text" class="form-control" id="pengeluaran" placeholder="Biasa / Penting / Rahasia">
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Pengelola / Petugas</label>
+                        <input type="text" class="form-control" id="pengelola" placeholder="Nama penanggung jawab">
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Tanggal Selesai</label>
+                        <input type="date" class="form-control" id="tanggalSelesai">
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <label class="form-label">Upload File (PDF/Foto)</label>
+                        <input type="file" class="form-control" id="fileSurat">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Keterangan Tambahan</label>
+                        <textarea class="form-control" id="keterangan" rows="2" placeholder="Catatan opsional..."></textarea>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary btn-custom w-100 w-md-auto px-4" id="btnSimpan">
+                            <i class="bi bi-save me-2"></i>Simpan Data
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
 
+        <!-- Tabel Data Card -->
         <div class="card p-4 bg-white">
-            <div class="table-responsive">
-                <table class="table table-hover" id="tabelAgenda">
-                    <thead><tr><th>No</th><th>Tanggal</th><th>Nomor Surat</th><th>Perihal</th><th>Aksi</th></tr></thead>
-                    <tbody><tr><td colspan="5" class="text-center">Memuat data...</td></tr></tbody>
+            <div class="d-flex justify-content-between align-items-center action-header mb-3">
+                <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-table"></i> Daftar Agenda Surat
+                </h5>
+                <button class="btn btn-success btn-custom" onclick="exportTableToExcel()">
+                    <i class="bi bi-file-earmark-excel-fill me-2"></i>Download Excel
+                </button>
+            </div>
+            
+            <div class="table-responsive rounded-3 border">
+                <table class="table table-hover align-middle mb-0" id="tabelAgenda">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal</th>
+                            <th>Nomor Surat</th>
+                            <th>Perihal</th>
+                            <th>Uraian</th>
+                            <th>Asal Surat</th>
+                            <th>Pengeluaran</th>
+                            <th>Pengelola</th>
+                            <th>Tgl Selesai</th>
+                            <th>Keterangan</th>
+                            <th>File</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="12" class="text-center py-4 text-muted">Memuat data...</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- Script JavaScript -->
     <script>
-        // PWA Install Logic
+        // Pendaftaran Service Worker untuk PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker terdaftar!', reg))
+                    .catch(err => console.log('Service Worker gagal:', err));
+            });
+        }
+
+        // Logika PWA Install Prompt
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -98,21 +291,67 @@
         document.getElementById('btnInstall').addEventListener('click', () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choice) => {
-                    if (choice.outcome === 'accepted') document.getElementById('btnInstall').classList.add('d-none');
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('btnInstall').classList.add('d-none');
+                    }
                     deferredPrompt = null;
                 });
             }
         });
 
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
-        }
+        window.addEventListener('appinstalled', (evt) => {
+            document.getElementById('btnInstall').classList.add('d-none');
+        });
 
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_LY0b3RYe7qB85mg_6-KdENhjxwcGDwo5RiU2p-N3sxcQBcvBwvCnRFXBQ5pLrHFhOg/exec';
 
-        window.onload = () => { if (localStorage.getItem("isLoggedIn") === "true") showApp(); };
+        window.onload = function() {
+            if (localStorage.getItem("isLoggedIn") === "true") {
+                showApp();
+            }
+        };
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const btnLogin = document.getElementById('btnLogin');
+            const errDiv = document.getElementById('loginError');
+
+            btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengecek...';
+            btnLogin.disabled = true;
+            errDiv.classList.add('d-none');
+
+            const loginData = {
+                action: 'login',
+                username: u,
+                password: p
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(loginData)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    localStorage.setItem("isLoggedIn", "true");
+                    showApp();
+                } else {
+                    errDiv.textContent = res.message;
+                    errDiv.classList.remove('d-none');
+                    btnLogin.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Masuk Aplikasi';
+                    btnLogin.disabled = false;
+                }
+            })
+            .catch(err => {
+                alert('Terjadi kesalahan koneksi!');
+                console.error(err);
+                btnLogin.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Masuk Aplikasi';
+                btnLogin.disabled = false;
+            });
+        });
 
         function showApp() {
             document.getElementById('loginWrapper').classList.add('d-none');
@@ -120,9 +359,158 @@
             loadData();
         }
 
-        function logout() { localStorage.removeItem("isLoggedIn"); location.reload(); }
+        function logout() {
+            localStorage.removeItem("isLoggedIn");
+            location.reload();
+        }
 
-        // Fungsi lainnya (Form, Fetch, Data) tetap sama...
+        function exportTableToExcel() {
+            var table = document.getElementById("tabelAgenda");
+            var cloneTable = table.cloneNode(true);
+            
+            for (var i = 0; i < cloneTable.rows.length; i++) {
+                cloneTable.rows[i].deleteCell(-1); 
+            }
+
+            var workbook = XLSX.utils.table_to_book(cloneTable, {sheet: "Agenda Surat", raw: true});
+            var sheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[sheetName];
+
+            for (var cell in worksheet) {
+                if (cell[0] === '!') continue;
+                worksheet[cell].t = 's'; 
+            }
+
+            worksheet['!cols'] = [
+                { wch: 5 },   { wch: 12 },  { wch: 20 },  { wch: 25 },  
+                { wch: 25 },  { wch: 20 },  { wch: 15 },  { wch: 15 },  
+                { wch: 12 },  { wch: 25 },  { wch: 15 }
+            ];
+
+            XLSX.writeFile(workbook, 'Agenda_Surat_SatpolPP.xlsx');
+        }
+
+        document.getElementById('agendaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSimpan');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+            btn.disabled = true;
+
+            const fileInput = document.getElementById('fileSurat');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    sendData(event.target.result, file.name, file.type);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                sendData(null, null, null);
+            }
+        });
+
+        function sendData(fileData, fileName, fileType) {
+            const data = {
+                tanggal: document.getElementById('tanggal').value,
+                nomorSurat: document.getElementById('nomorSurat').value,
+                perihal: document.getElementById('perihal').value,
+                uraian: document.getElementById('uraian').value,
+                asalSurat: document.getElementById('asalSurat').value,
+                pengeluaran: document.getElementById('pengeluaran').value,
+                pengelola: document.getElementById('pengelola').value,
+                tanggalSelesai: document.getElementById('tanggalSelesai').value,
+                keterangan: document.getElementById('keterangan').value,
+                fileData: fileData,
+                fileName: fileName,
+                fileType: fileType
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message);
+                location.reload();
+            })
+            .catch(err => {
+                alert('Gagal menyimpan data!');
+                console.error(err);
+                const btn = document.getElementById('btnSimpan');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-save me-2"></i>Simpan Data';
+            });
+        }
+
+        function hapusData(rowIndex, nomorSurat) {
+            if (confirm(`Apakah Anda yakin ingin menghapus agenda dengan Nomor Surat: "${nomorSurat}"?`)) {
+                const data = {
+                    action: 'delete',
+                    rowIndex: rowIndex
+                };
+
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                })
+                .then(res => res.json())
+                .then(res => {
+                    alert(res.message);
+                    location.reload();
+                })
+                .catch(err => {
+                    alert('Gagal menghapus data!');
+                    console.error(err);
+                });
+            }
+        }
+
+        function loadData() {
+            fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#tabelAgenda tbody');
+                tbody.innerHTML = '';
+                
+                if(data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-muted">Belum ada data agenda surat.</td></tr>`;
+                    return;
+                }
+
+                data.sort((a, b) => {
+                    let numA = a['Nomor Surat'] || '';
+                    let numB = b['Nomor Surat'] || '';
+                    return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' });
+                });
+
+                data.forEach((row, index) => {
+                    let fileLink = row['Link File'] ? `<a href="${row['Link File']}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> Lihat</a>` : '<span class="text-muted">-</span>';
+                    let btnHapus = `<button class="btn btn-sm btn-danger px-2 py-1" onclick="hapusData(${row['rowIndex']}, '${row['Nomor Surat']}')"><i class="bi bi-trash-fill"></i></button>`;
+                    
+                    let tr = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${row['Tanggal'] ? row['Tanggal'].split('T')[0] : ''}</td>
+                        <td class="fw-bold text-dark">${row['Nomor Surat'] || ''}</td>
+                        <td>${row['Perihal'] || ''}</td>
+                        <td>${row['Uraian'] || ''}</td>
+                        <td>${row['Asal Surat'] || ''}</td>
+                        <td>${row['Pengeluaran'] || ''}</td>
+                        <td>${row['Pengelola'] || ''}</td>
+                        <td>${row['Tanggal Selesai'] ? row['Tanggal Selesai'].split('T')[0] : ''}</td>
+                        <td>${row['Keterangan'] || ''}</td>
+                        <td>${fileLink}</td>
+                        <td class="text-center">${btnHapus}</td>
+                    </tr>`;
+                    tbody.innerHTML += tr;
+                });
+            })
+            .catch(err => {
+                const tbody = document.querySelector('#tabelAgenda tbody');
+                tbody.innerHTML = `<tr><td colspan="12" class="text-center py-4 text-danger">Gagal memuat data dari server.</td></tr>`;
+            });
+        }
     </script>
 </body>
 </html>
