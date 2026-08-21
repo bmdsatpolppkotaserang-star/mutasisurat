@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -100,7 +99,16 @@
 
         function exportTableToExcel() {
             var table = document.getElementById("tabelAgenda");
-            var workbook = XLSX.utils.table_to_book(table, {sheet: "Agenda Surat"});
+            var workbook = XLSX.utils.table_to_book(table, {sheet: "Agenda Surat", raw: true});
+            
+            // Memaksa semua sel terbaca sebagai teks agar nomor surat (seperti "100/") tidak berubah jadi tanggal
+            var sheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[sheetName];
+            for (var cell in worksheet) {
+                if (cell[0] === '!') continue;
+                worksheet[cell].t = 's'; 
+            }
+
             XLSX.writeFile(workbook, 'Agenda_Surat_SatpolPP.xlsx');
         }
 
