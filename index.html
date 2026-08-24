@@ -486,7 +486,10 @@
                 });
 
                 data.forEach((row, index) => {
-                    let fileLink = row['Link File'] ? `<a href="${row['Link File']}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> Lihat</a>` : '<span class="text-muted">-</span>';
+                    // Deteksi berbagai variasi nama kolom/key link file yang dikirim Apps Script
+                    let urlFile = row['Link File'] || row['linkFile'] || row['urlFile'] || row['File'] || row['file'] || row['URL File'];
+                    let fileLink = urlFile ? `<a href="${urlFile}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> Lihat</a>` : '<span class="text-muted">-</span>';
+                    
                     let btnHapus = `<button class="btn btn-sm btn-danger px-2 py-1" onclick="hapusData(${row['rowIndex']}, '${row['Nomor Surat']}')"><i class="bi bi-trash-fill"></i></button>`;
                     
                     let tr = `<tr>
